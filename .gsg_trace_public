@@ -1,0 +1,3 @@
+This file marks the PUBLIC GSG TRACE code repository.
+TRACE refuses to write investigation data (cache, run records, reports) anywhere under this directory.
+Do not delete it.

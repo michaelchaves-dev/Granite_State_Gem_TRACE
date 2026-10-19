@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GSG TRACE</title>
+<meta name="description" content="Contractor public-record discovery with a citation for every finding.">
+<style>
+:root{
+  --bg:#f4f3f0; --panel:#ffffff; --ink:#1d2228; --muted:#5d6670; --line:#dcd9d3;
+  --granite:#2f3740; --gem:#0f7c6e; --gem-ink:#ffffff;
+  --legal:#0f7c6e; --oper:#2d5fa8; --unres:#a86a00; --contra:#b23a48; --unrel:#6b7280;
+  --chip:#eef2f1; --warn-bg:#fff6e5; --warn-line:#e8c27a;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#14181c;--panel:#1c2228;--ink:#e7eaec;--muted:#9aa4ad;--line:#2e363e;--granite:#0e1216;
+        --gem:#2bb39f;--gem-ink:#06201c;--chip:#23302e;--warn-bg:#2a2214;--warn-line:#6b5420;
+        --legal:#2bb39f;--oper:#6c9be0;--unres:#e0a43a;--contra:#e06a78;--unrel:#9aa4ad}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans)}
+header{background:var(--granite);color:#fff;padding:28px 16px 64px}
+.wrap{max-width:1040px;margin:0 auto}
+.brand{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.brand h1{font:600 30px/1.1 var(--serif);margin:0;letter-spacing:.5px}
+.brand h1 span{color:#7fd8c9}
+.brand p{margin:0;color:#b9c3cb;font-size:14px}
+.tagline{margin:14px 0 0;color:#d5dde3;max-width:640px}
+main{margin-top:-40px;padding:0 16px 64px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+form .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);font:inherit}
+input:focus{outline:2px solid var(--gem);outline-offset:1px}
+.actions{display:flex;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap}
+button{border:0;border-radius:8px;padding:10px 18px;font:600 15px var(--sans);cursor:pointer}
+.primary{background:var(--gem);color:var(--gem-ink)}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.hint{font-size:13px;color:var(--muted)}
+.notice{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;padding:10px 14px;font-size:14px;margin:16px 0}
+.error{color:var(--contra);font-weight:600}
+section{margin-top:20px}
+section h2{font:600 19px/1.3 var(--serif);margin:0 0 10px;display:flex;gap:10px;align-items:baseline}
+section h2 small{font:500 12px var(--mono);color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font:600 22px var(--serif)}
+.stat span{font-size:12px;color:var(--muted)}
+.entity{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:12px}
+.entity h3{margin:0 0 6px;font:600 17px var(--serif)}
+.mono{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+ul.claims{list-style:none;margin:8px 0 0;padding:0}
+ul.claims li{padding:6px 0;border-top:1px dashed var(--line);display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+ul.claims li:first-child{border-top:0}
+.cite{font:600 11.5px var(--mono);background:var(--chip);border-radius:6px;padding:2px 6px;white-space:nowrap;color:var(--ink);text-decoration:none}
+.pill{font:600 11.5px var(--sans);text-transform:uppercase;letter-spacing:.4px;border-radius:999px;padding:2px 9px;color:#fff;white-space:nowrap}
+.s-verified_legal{background:var(--legal)} .s-documented_operational{background:var(--oper)}
+.s-unresolved{background:var(--unres)} .s-contradicted{background:var(--contra)}
+.s-unrelated,.s-insufficient_information{background:var(--unrel)}
+.rel{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:10px 0;border-top:1px solid var(--line)}
+.rel:first-of-type{border-top:0}
+.rel p{margin:0;grid-column:1/-1;color:var(--muted);font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+.scroll{overflow-x:auto}
+.muted{color:var(--muted)}
+footer{max-width:1040px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:13px}
+@media (max-width:600px){ul.claims li{flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand"><h1>GSG <span>TRACE</span></h1><p>Granite State Gem · Intelligence by Subtraction</p></div>
+    <p class="tagline">We find the records. We verify documented connections. We cite the evidence. You decide.</p>
+  </div>
+</header>
+<main class="wrap">
+  <div class="panel">
+    <form id="f" autocomplete="off">
+      <div class="grid">
+        <div><label for="business_name">Business name or DBA</label><input id="business_name" maxlength="200" placeholder="Granite Peak Roofing"></div>
+        <div><label for="phone">Business phone</label><input id="phone" maxlength="40" placeholder="(603) 555-0101"></div>
+        <div><label for="domain">Website</label><input id="domain" maxlength="200" placeholder="example.com"></div>
+        <div><label for="email">Business email</label><input id="email" maxlength="200"></div>
+        <div><label for="address">Business address</label><input id="address" maxlength="200"></div>
+        <div><label for="registry_id">Registry ID</label><input id="registry_id" maxlength="64" placeholder="S-1001"></div>
+        <div><label for="jurisdiction">State</label><input id="jurisdiction" maxlength="5" value="NH"></div>
+      </div>
+      <div class="actions">
+        <button class="primary" type="submit" id="go">Search records</button>
+        <span class="hint">Enter one or more business identifiers.</span>
+        <span id="status" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+    <div class="notice">Demo build: searches a <strong>synthetic</strong> test registry. No result here describes a real business.</div>
+  </div>
+  <div id="out"></div>
+</main>
+<footer id="disc"></footer>
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const FIELDS = ["business_name","phone","domain","email","address","registry_id"];
+let last = null;
+
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") n.className = v; else if (k === "text") n.textContent = v; else n.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) n.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return n;
+}
+const label = (s) => String(s).replaceAll("_", " ");
+const short = (id) => id.slice(0, 8);
+
+function entityName(run, key) {
+  const recs = run.entities[key] || [];
+  const r = recs.find((x) => x.fields && x.fields.legal_name);
+  return r ? r.fields.legal_name : key;
+}
+function cite(r) { return el("a", {class: "cite", href: "#ref-" + short(r.claim_id), title: r.source_name}, "[" + short(r.claim_id) + "]"); }
+function claimList(rs) {
+  if (!rs.length) return el("p", {class: "muted", text: "No publishable findings."});
+  return el("ul", {class: "claims"}, rs.map((r) => el("li", {}, el("span", {text: r.claim_text}), cite(r))));
+}
+function section(title, tag, ...kids) {
+  return el("section", {class: "panel"}, el("h2", {}, title, tag ? el("small", {text: tag}) : null), ...kids);
+}
+function download(name, text, type) {
+  const a = el("a", {href: URL.createObjectURL(new Blob([text], {type})), download: name});
+  document.body.append(a); a.click(); a.remove();
+}
+
+function render(p) {
+  const run = p.run, pub = p.receipts.published, out = $("#out");
+  out.replaceChildren();
+  $("#disc").textContent = p.disclaimer;
+  const bySubj = (k, pre) => pub.filter((r) => r.subject_business_id === k && r.claim_category.startsWith(pre));
+  const m = run.metrics || {};
+
+  out.append(section("Search summary", "A",
+    el("div", {class: "stats"},
+      [["Sources checked", run.sources_checked.length], ["External requests", m.external_requests ?? 0],
+       ["Cache hits", (m.cache_hits_positive ?? 0) + (m.cache_hits_negative ?? 0)], ["Records found", m.entities_found ?? 0],
+       ["Estimated cost", "$" + (m.estimated_cost_usd ?? 0).toFixed(2)], ["Ended", label(run.stop_reason)]]
+      .map(([k, v]) => el("div", {class: "stat"}, el("b", {text: String(v)}), el("span", {text: k})))),
+    run.sources_unavailable.length ? el("p", {class: "error", text: run.sources_unavailable.length + " source(s) could not be searched; missing results from them mean nothing."}) : null,
+    run.preflight.rejected_inputs.length ? el("p", {class: "error", text: "Rejected: " + run.preflight.rejected_inputs.map((r) => r.type + " — " + r.error).join("; ")}) : null,
+    el("div", {class: "actions"},
+      el("button", {class: "ghost", type: "button", id: "dl-md"}, "Download report (.md)"),
+      el("button", {class: "ghost", type: "button", id: "dl-json"}, "Download evidence (.json)"))));
+  $("#dl-md").onclick = () => download("trace-report.md", p.markdown, "text/markdown");
+  $("#dl-json").onclick = () => download("trace-evidence.json", JSON.stringify(p, null, 2), "application/json");
+
+  const b = section("Business identity", "B");
+  if (!run.subject_keys.length) b.append(el("p", {class: "muted", text: "No record matching these identifiers was found in the sources checked. That does not mean the business does not exist."}));
+  if (run.subject_keys.length > 1) b.append(el("div", {class: "notice", text: run.subject_keys.length + " separate records matched. TRACE did not merge them — confirm which one you are dealing with (for example by registry ID)."}));
+  for (const k of run.subject_keys) b.append(el("div", {class: "entity"}, el("h3", {text: entityName(run, k)}), el("div", {class: "mono", text: k}), claimList(bySubj(k, "identity."))));
+  out.append(b);
+
+  const relRow = (r) => el("div", {class: "rel"},
+    el("strong", {text: entityName(run, r.subject_entity) + "  ↔  " + entityName(run, r.related_entity)}),
+    el("span", {class: "pill s-" + r.status, text: label(r.status)}),
+    el("p", {text: r.basis}));
+  const documented = run.relationships.filter((r) => ["verified_legal","documented_operational","contradicted","unrelated"].includes(r.status));
+  out.append(section("Documented business relationships", "C",
+    documented.length ? documented.map(relRow) : el("p", {class: "muted", text: "No documented relationships were established in the sources checked."})));
+
+  out.append(section("Public business history", "D", claimList(pub.filter((r) => r.claim_category.startsWith("history.")))));
+  out.append(section("Customer experience records", "E", el("p", {class: "muted", text: "Not searched: no approved review or complaint source is configured yet. This says nothing about the business's customer history."})));
+  out.append(section("Official public records", "F", el("p", {class: "muted", text: "Not searched: no approved licensing, permit, court or enforcement source is configured yet."})));
+
+  const g = section("Unresolved information", "G");
+  const unresolved = run.relationships.filter((r) => ["unresolved","insufficient_information"].includes(r.status) && (r.shared_identifiers.length || r.supporting_records.length));
+  unresolved.forEach((r) => g.append(relRow(r)));
+  run.negative_results.forEach((n) => g.append(el("p", {class: "muted", text: `Nothing found for ${n.identifier} in ${n.source_name} as of ${n.as_of}. This does not establish that no such record exists.`})));
+  if (run.deferred_leads.length) g.append(el("p", {class: "muted", text: run.deferred_leads.length + " identifier(s) were found but not searched further (search limits)."}));
+  if (p.receipts.pending_review.length) g.append(el("p", {class: "muted", text: p.receipts.pending_review.length + " finding(s) are withheld pending human review."}));
+  if (g.childNodes.length === 1) g.append(el("p", {class: "muted", text: "None recorded."}));
+  out.append(g);
+
+  const rows = pub.map((r) => el("tr", {id: "ref-" + short(r.claim_id)},
+    el("td", {class: "mono", text: short(r.claim_id)}), el("td", {text: r.source_name}),
+    el("td", {class: "mono", text: r.source_record_identifier}), el("td", {class: "mono", text: r.source_url_or_reference}),
+    el("td", {class: "mono", text: r.observed_at_utc}), el("td", {text: r.verification_status})));
+  out.append(section("Source register", "H", el("div", {class: "scroll"}, el("table", {},
+    el("thead", {}, el("tr", {}, ["Ref","Source","Record","Reference","Retrieved (UTC)","Verification"].map((h) => el("th", {text: h})))),
+    el("tbody", {}, rows)))));
+  out.append(section("Corrections and responses", "I", el("p", {class: "muted", text: "No corrections or business responses are on file. Businesses can request a correction; corrected findings are re-verified against the source."})));
+}
+
+$("#f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const identifiers = {};
+  for (const f of FIELDS) { const v = $("#" + f).value.trim(); if (v) identifiers[f] = v; }
+  const status = $("#status");
+  if (!Object.keys(identifiers).length) { status.textContent = "Enter at least one identifier."; status.className = "error"; return; }
+  status.textContent = "Searching…"; status.className = "hint"; $("#go").disabled = true;
+  try {
+    const res = await fetch("/api/search", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({identifiers, jurisdiction: $("#jurisdiction").value.trim() || null})});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Search failed");
+    last = data; render(data); status.textContent = "";
+  } catch (err) {
+    status.textContent = err.message; status.className = "error";
+  } finally { $("#go").disabled = false; }
+});
+</script>
+</body>
+</html>
