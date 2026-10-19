@@ -1,0 +1,33 @@
+# --- Investigation data must never be committed to this public repo ---
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+runs/
+trace-data/
+data/
+reports/
+*.report.md
+*.report.json
+.env
+.env.*
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# --- Editors / OS ---
+.DS_Store
+.idea/
+.vscode/

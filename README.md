@@ -6,7 +6,7 @@ Subtract Architect Studios — *Intelligence by Subtraction*
 ## Mission
 Help consumers find and understand documented contractor business histories by searching fragmented public information, preserving citations, and presenting only what the evidence establishes. TRACE does **not** judge character, assign guilt, speculate about motives, or turn allegations into facts. Consumers make their own decisions.
 
-**Status:** Architecture and implementation plan; no claim of a deployed search engine, live registry integrations, or completed investigations.
+**Status:** v0.1 engine implemented and tested against **synthetic** data only. No live registry integration, no deployment, no real investigations. See *Implementation status* below and the build plan in [`docs/CURSOR_BUILD_SLICES.md`](docs/CURSOR_BUILD_SLICES.md).
 
 ## Independent modular boundaries
 TRACE is its own contractor-focused service. The following are **optional, independently maintained** capabilities—not components merged into TRACE:
@@ -86,5 +86,29 @@ Do **not** commit investigation dossiers, contact exports, client records, raw q
 3. Add bounded recursion and positive/negative caching.
 4. Add evidence receipts, review queue, correction workflow, and neutral reporting.
 5. Test optional versioned integrations with independent Compliance and Provenance services.
+
+## Implementation status (v0.1 — Contractor Identity Discovery)
+Implemented in `gsg_trace/` (Python 3.11+, standard library only, no paid dependencies):
+
+| Module | What it does |
+|---|---|
+| `normalize.py` | Phone (E.164), business name (case/punctuation/legal-suffix/alias aware), domain, email, address, social, registry ID; dedupe that preserves original spellings |
+| `engine.py` | Negative Step Zero preflight; bounded breadth-first discovery (depth, branches, requests, time, cost, entities); per-step reason log; deferred-lead log |
+| `cache.py` | Positive + negative search memory with TTLs, per-client namespaces, invalidation, metrics; errors are never cached |
+| `relationships.py` | Six relationship statuses; corroboration counted by independent origin; contradiction handling |
+| `receipts.py` | Evidence receipts with the spec's fields; publication gate (complete citation + approval); adverse and injection-flagged findings held for review |
+| `report.py` | Neutral report sections A–I in Markdown and JSON with a neutral-language lint |
+| `privacy.py`, `store.py` | Refuses to store data in this repo or any unmarked git work tree; 0700/0600 files; hashed identifiers in logs |
+| `sources/` | Adapter contract + a synthetic registry fixture adapter (the only source in v0.1) |
+| `web/` | Local dev UI and JSON API (`127.0.0.1` only) |
+
+```bash
+pip install -e ".[dev]"
+python -m pytest
+python -m gsg_trace search --phone "(603) 555-0101" --jurisdiction NH --source-fixture fixtures/synthetic_nh_registry.json
+python -m gsg_trace serve --source-fixture fixtures/synthetic_nh_registry.json   # http://127.0.0.1:8765
+```
+
+Private data goes to `$GSG_TRACE_DATA_DIR` (default `~/.local/share/gsg_trace`), never into this repository. The private GSG_TRACE_Data repo can be used as a data dir only if its root contains a `.gsg_trace_private` marker.
 
 **Principle: We find records, verify documented connections, cite sources, and let consumers decide.**

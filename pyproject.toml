@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gsg-trace"
+version = "0.1.0"
+description = "Granite State Gem TRACE — contractor identity discovery with evidence receipts"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+dependencies = []  # v0.1 is stdlib-only: no paid or third-party runtime dependencies
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+gsg-trace = "gsg_trace.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["gsg_trace*"]
+
+[tool.setuptools.package-data]
+"gsg_trace.web" = ["static/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests", "."]
+addopts = "-q"

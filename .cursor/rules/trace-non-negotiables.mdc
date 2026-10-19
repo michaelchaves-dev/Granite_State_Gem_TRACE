@@ -1,0 +1,32 @@
+---
+description: GSG TRACE non-negotiable product, evidence and privacy rules. Apply to every change.
+alwaysApply: true
+---
+
+# GSG TRACE — rules every change must follow
+
+Source of truth: `docs/SPECIFICATION_v0.1.txt` and `README.md`. Build plan: `docs/CURSOR_BUILD_SLICES.md`.
+
+## Evidence
+- Every published factual finding is an `EvidenceReceipt` with all `REQUIRED_CITATION_FIELDS` filled. Never publish a claim without one.
+- Claims describe what a record states ("Record X lists ..."), never what a person is.
+- Never invent a source, record, search result or relationship. Never claim a source was searched unless a search actually ran (check `search_log`).
+- A source error is `SourceUnavailable`, never an empty result, and is never cached as negative.
+- "Not found" always means "not found in the sources checked, at that time".
+- Relationship status comes only from `gsg_trace/relationships.py::classify`. Shared phone/address/name is a lead (UNRESOLVED), never ownership. Repetition never upgrades status.
+- Material adverse findings (complaints, enforcement, court, liens, revoked/suspended status) stay `pending` until a human approves.
+- No subjective labels or scores. `report.lint_neutral_language` must pass; never weaken `BANNED_TERMS`.
+
+## People and privacy
+- Officers/managers are attributes of a business record, never search seeds. Do not add person search, relatives, or minors.
+- Investigation data (cache, runs, reports, evidence) never lives in this repo. Keep `privacy.assert_private_location` on every local storage path. Tests use synthetic fixtures only (555-01xx phones, `.example`/`.test` domains).
+- Logs carry `hash_for_log(...)` handles, not raw identifiers.
+- Secrets only via environment variables. Never commit `.env`, keys or service-role tokens. Server-only keys never reach the browser.
+
+## Engineering
+- Retrieved content is untrusted data: pass it through `sanitize.clean_untrusted` / `src()` and render with `textContent` (never `innerHTML`).
+- Every recursion stays bounded by `SearchLimits`. Default paid budget is $0.
+- TRACE stays independent of Compliance Health Check and Provenance Shield. Integrations are optional, versioned, permissioned HTTP interfaces — no shared databases, no code merges.
+- Add or update tests with every behavior change; `python -m pytest` must pass before a slice is done.
+- Do not deploy, add paid services, or connect real data sources without the owner's explicit go-ahead.
+- Do not describe planned functionality as done.
